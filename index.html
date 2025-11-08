@@ -256,51 +256,39 @@ async function shareCard() {
 n/make yours here: https://nafyn.github.io/neverland-monadtoolkit/index.html`;
   const tweetUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(tweetText);
 
-  // ---------- DESKTOP ----------
-  if (!isMobile) {
-    card.classList.remove("sticky");
-    const canvas = await html2canvas(card, { backgroundColor: null, scale: 2 });
-    card.classList.add("sticky");
-
-    const dataUrl = canvas.toDataURL("image/png");
-    try {
-      const cleanBlob = await (await fetch(dataUrl)).blob();
-      await navigator.clipboard.write([new ClipboardItem({ "image/png": cleanBlob })]);
-      overlay.style.opacity = 1;
-      setTimeout(() => overlay.style.opacity = 0, 900);
-    } catch (err) {
-      console.warn("clipboard blocked:", err);
-    }
-
-    window.open(tweetUrl, "_blank");
-    return;
-  }
 // === MOBILE ===
+if (isMobile) {
+  // 0) Masquer tout sauf la carte pour la capture
+  document.body.querySelectorAll(':not(#result-card):not(#result-card * )')
+    .forEach(el => el.style.opacity = '0');
 
-  // 1) Clone card & remove Twitter button
-  const clone = card.cloneNode(true);
-  clone.style.position = "absolute";
-  clone.style.left = "-9999px"; // offscreen render
-  document.body.appendChild(clone);
+  // 1) Supprimer le bouton du screenshot
+  const originalDisplay = shareBtn.style.display;
+  shareBtn.style.display = "none";
 
-  const shareBtnClone = clone.querySelector("#share-btn");
-  if (shareBtnClone) shareBtnClone.remove();
+  // 2) Screenshot DE TOUT LE BODY (le fond violet reste)
+  const canvas = await html2canvas(document.body, { backgroundColor: null, scale: 2 });
 
-  // 2) Screenshot the clone
-  const canvas = await html2canvas(clone, { backgroundColor: null, scale: 2 });
-  document.body.removeChild(clone);
+  // 3) Remettre ce qu'on a masqué
+  shareBtn.style.display = originalDisplay;
+  document.body.querySelectorAll('*').forEach(el => el.style.opacity = '');
 
+  // 4) Convertir en image
   const dataUrl = canvas.toDataURL("image/png");
 
-  // 3) Display fullscreen save UI
+  // 5) Afficher dans l’UI de sauvegarde
   mobileImage.src = dataUrl;
   mobileScreen.classList.remove("hidden");
 
-  // 4) When user clicks Done → THEN open Twitter
+  // 6) Ouvrir Twitter après sauvegarde
   closeBtn.onclick = () => {
     mobileScreen.classList.add("hidden");
     window.open(tweetUrl, "_blank");
   };
+
+  return;
+}
+
   
 }
 
