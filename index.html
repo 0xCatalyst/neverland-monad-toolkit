@@ -253,7 +253,7 @@ async function shareCard() {
   const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
 
   const tweetText = `this is my Monad Mainnet Toolkit. day 1 is gonna be a movie ✦
-make yours here: https://nafyn.github.io/neverland-monadtoolkit/index.html`;
+n/make yours here: https://nafyn.github.io/neverland-monadtoolkit/index.html`;
   const tweetUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(tweetText);
 
   // ---------- DESKTOP ----------
@@ -276,39 +276,31 @@ make yours here: https://nafyn.github.io/neverland-monadtoolkit/index.html`;
     return;
   }
 // === MOBILE ===
-if (isMobile) {
 
   // 1) Clone card & remove Twitter button
   const clone = card.cloneNode(true);
   clone.style.position = "absolute";
-  clone.style.left = "-9999px"; // hors écran
-
-  // ✅ Applique le fond correct pour la capture
-  clone.style.background = "radial-gradient(circle at top, #3B1477, #0C021F 70%)";
-  clone.style.padding = "20px";
-  clone.style.borderRadius = "20px";
-
+  clone.style.left = "-9999px"; // offscreen render
   document.body.appendChild(clone);
 
   const shareBtnClone = clone.querySelector("#share-btn");
   if (shareBtnClone) shareBtnClone.remove();
 
-  // 2) Screenshot du clone
+  // 2) Screenshot the clone
   const canvas = await html2canvas(clone, { backgroundColor: null, scale: 2 });
   document.body.removeChild(clone);
 
   const dataUrl = canvas.toDataURL("image/png");
+
+  // 3) Display fullscreen save UI
   mobileImage.src = dataUrl;
   mobileScreen.classList.remove("hidden");
 
-  // 3) Bouton "Done" → ouvre Twitter après save
+  // 4) When user clicks Done → THEN open Twitter
   closeBtn.onclick = () => {
     mobileScreen.classList.add("hidden");
     window.open(tweetUrl, "_blank");
   };
-
-  return;
-}
   
 }
 
