@@ -108,15 +108,21 @@ function render() {
 }
 
 function updateCard() {
-  resultContent.innerHTML = Object.entries(state)
-    .map(([cat, val]) => `
-      <div class="flex justify-between">
-        <span class="text-white/60">${cat}</span>
-        <span>${val}</span>
-      </div>`)
-    .join("");
+  let html = "";
 
-  // Show card as soon as the user selects something
+  Object.entries(groups).forEach(([groupName, categories]) => {
+    Object.keys(categories).forEach(category => {
+      const val = state[category] || "";
+      html += `
+        <div class="flex justify-between">
+          <span class="text-white/60">${category}</span>
+          <span>${val}</span>
+        </div>
+      `;
+    });
+  });
+
+  resultContent.innerHTML = html;
   resultCard.classList.remove("hidden");
 }
 
