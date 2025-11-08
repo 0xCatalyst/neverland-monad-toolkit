@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Monad Day 1 Toolkit</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      background: radial-gradient(circle at top, #3B1477, #0C021F 70%);
+      font-family: system-ui, sans-serif;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen text-white flex flex-col items-center py-8 px-4">
+
+  <h1 class="text-3xl font-bold mb-8">Monad Day 1 Toolkit</h1>
+
+  <div id="app" class="w-full max-w-3xl space-y-8"></div>
+
+  <!-- Final Card -->
+  <div id="result-card" class="hidden w-full max-w-sm mt-14 p-6 rounded-2xl bg-[#31144B]/60 backdrop-blur border border-white/10 shadow-lg text-center">
+    <h3 class="text-lg font-semibold mb-2">Your Loadout</h3>
+    <p class="text-sm text-white/70 mb-4">~ Mainnet Day 1 ~</p>
+    <div id="result-content" class="space-y-1 text-sm"></div>
+  </div>
+
+<script>
+const categories = {
+  Wallets: ["Phantom", "Backpack", "Metamask"],
+  Bridges: ["Wormhole", "LayerZero"],
+  DEX: ["Kuru", "Uniswap", "LFJ", "Curve"],
+  Lending: ["Euler", "Curvance"],
+  Perps: ["Perp", "Drake"],
+  NFTs: ["OpenSea", "Magic Eden"],
+  "Liquid Staking": ["Fastlane", "Magma", "Kintsu"],
+  "Prediction Markets": ["Kizzy", "RBS", "Levr"]
+};
+
+const state = {};
+const app = document.getElementById("app");
+const resultCard = document.getElementById("result-card");
+const resultContent = document.getElementById("result-content");
+
+function render() {
+  app.innerHTML = "";
+
+  Object.entries(categories).forEach(([category, options]) => {
+    const section = document.createElement("div");
+
+    section.innerHTML = `
+      <h2 class="text-xl font-medium mb-3">${category}</h2>
+      <div class="flex flex-wrap gap-3"></div>
+    `;
+
+    const buttons = section.querySelector("div");
+
+    options.forEach(option => {
+      const btn = document.createElement("button");
+      const active = state[category] === option;
+
+      btn.className = `
+        px-4 py-2 rounded-full text-sm border transition
+        ${active 
+          ? "bg-gradient-to-r from-[#D767FF] to-[#8A4BFF] border-transparent shadow-md scale-105"
+          : "bg-[#31144B]/50 border-white/20 hover:border-white/40"}
+      `;
+      btn.textContent = option;
+
+      btn.onclick = () => {
+        state[category] = option;
+        updateCard();
+        render();
+      };
+
+      buttons.appendChild(btn);
+    });
+
+    app.appendChild(section);
+  });
+}
+
+function updateCard() {
+  const selected = Object.keys(categories).every(cat => state[cat]);
+
+  if (!selected) {
+    resultCard.classList.add("hidden");
+    return;
+  }
+
+  resultContent.innerHTML = Object.entries(state)
+    .map(([cat, val]) => `<div class="flex justify-between"><span class="text-white/60">${cat}</span><span>${val}</span></div>`)
+    .join("");
+
+  resultCard.classList.remove("hidden");
+}
+
+render();
+</script>
+</body>
+</html>
