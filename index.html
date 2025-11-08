@@ -54,8 +54,11 @@
 <div id="mobile-save-screen" class="fixed inset-0 bg-black/90 backdrop-blur-lg hidden z-50 flex flex-col justify-center items-center p-6 text-center">
   <img id="mobile-save-image" class="max-w-[90%] max-h-[70%] rounded-xl shadow-2xl" />
   <p class="text-white/80 mt-5 text-sm">Tap & hold the image → Save to Photos</p>
-</div>
 
+  <button id="mobile-close" class="mt-6 px-5 py-2 text-sm bg-white/10 border border-white/30 rounded-lg text-white">
+    Done ✦
+  </button>
+</div>
   
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script>
@@ -251,59 +254,62 @@ document.getElementById("share-btn").onclick = () => {
   window.open(tweetUrl, "_blank");
 };
 
+document.getElementById("share-btn").onclick = shareCard;
+
 async function shareCard() {
   const card = document.getElementById("result-card");
   const overlay = document.getElementById("copied-overlay");
   const mobileScreen = document.getElementById("mobile-save-screen");
   const mobileImage = document.getElementById("mobile-save-image");
+  const closeBtn = document.getElementById("mobile-close");
 
   const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
 
-  // 🔥 Fix 1: remove sticky to avoid cropping
-  card.classList.remove("sticky");
+  // → Sur mobile : pas de sticky manipulation (moins de risques de décalage)
+  if (!isMobile) card.classList.remove("sticky");
 
-  // Generate capture
   const canvas = await html2canvas(card, { backgroundColor: null, scale: 2 });
 
-  // Restore sticky
-  card.classList.add("sticky");
+  if (!isMobile) card.classList.add("sticky");
 
   const dataUrl = canvas.toDataURL("image/png");
-  const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
-  const file = new File([blob], "monad-toolkit.png", { type: "image/png" });
 
   const tweetText = `this is my Monad Mainnet Toolkit. day 1 is gonna be a movie ✦
-\n make yours here: https://nafyn.github.io/neverland-monadtoolkit/index.html`;
+make yours here: https://nafyn.github.io/neverland-monadtoolkit/index.html`;
 
   const tweetUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(tweetText);
 
-  // 📱 MOBILE
+  // 📱 MOBILE FLOW (NO SHARE SHEET)
   if (isMobile) {
-    // ✅ Open Twitter immediately (allowed because in click event)
+    // 1) Twitter d’abord (doit être dans le contexte du clic pour ne pas être bloqué)
     window.open(tweetUrl, "_blank");
 
-    // ✅ Then show fullscreen save UI
+    // 2) On affiche la carte à enregistrer
     mobileImage.src = dataUrl;
     mobileScreen.classList.remove("hidden");
+
+    // 3) Bouton retour
+    closeBtn.onclick = () => {
+      mobileScreen.classList.add("hidden");
+    };
+
     return;
   }
 
-  // 💻 DESKTOP
-  // 💻 DESKTOP — copy image safely
-try {
-  // Re-fetch clean blob to avoid tainted canvas block
-  const cleanBlob = await (await fetch(dataUrl)).blob();
-  await navigator.clipboard.write([
-    new ClipboardItem({ "image/png": cleanBlob })
-  ]);
+  // 💻 DESKTOP FLOW
+  try {
+    const cleanBlob = await (await fetch(dataUrl)).blob();
 
-  // Show "Copied ✦"
-  overlay.style.opacity = 1;
-  setTimeout(() => overlay.style.opacity = 0, 900);
+    await navigator.clipboard.write([
+      new ClipboardItem({ "image/png": cleanBlob })
+    ]);
 
-} catch (err) {
-  console.warn("Clipboard copy failed on desktop:", err);
-}
+    overlay.style.opacity = 1;
+    setTimeout(() => overlay.style.opacity = 0, 900);
+
+  } catch (err) {
+    console.warn("Desktop clipboard copy failed → skipping copy", err);
+  }
 
   window.open(tweetUrl, "_blank");
 }
