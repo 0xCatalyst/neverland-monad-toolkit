@@ -50,6 +50,12 @@
 </div>
   </div>
 </div>
+
+<div id="mobile-save-screen" class="fixed inset-0 bg-black/90 backdrop-blur-lg hidden z-50 flex flex-col justify-center items-center p-6 text-center">
+  <img id="mobile-save-image" class="max-w-[90%] max-h-[70%] rounded-xl shadow-2xl" />
+  <p class="text-white/80 mt-5 text-sm">Tap & hold the image → Save to Photos</p>
+</div>
+
   
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script>
@@ -248,49 +254,50 @@ document.getElementById("share-btn").onclick = () => {
 async function shareCard() {
   const card = document.getElementById("result-card");
   const overlay = document.getElementById("copied-overlay");
+  const mobileScreen = document.getElementById("mobile-save-screen");
+  const mobileImage = document.getElementById("mobile-save-image");
 
   // Générer capture haute résolution
   const canvas = await html2canvas(card, { backgroundColor: null, scale: 2 });
-
+  const dataUrl = canvas.toDataURL("image/png");
   const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
-  const file = new File([blob], "monad-toolkit.png", { type: "image/png" });
 
   const text = `this is my Monad Mainnet Toolkit. day 1 is gonna be a movie ✦
 make yours here: https://nafyn.github.io/neverland-monadtoolkit/index.html`;
 
-  // ✅ MOBILE — on ne touche pas (on laisse le comportement actuel)
-  if (/iPhone|iPad|Android/i.test(navigator.userAgent)) {
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      try {
-        await navigator.share({ files: [file], text });
-        return;
-      } catch (err) {
-        console.log("User closed share sheet:", err);
-      }
-    }
+  // 🌍 Detect mobile
+  const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
 
-    // Fallback mobile = overlay + open tweet
-    overlay.style.opacity = 1;
-    setTimeout(() => overlay.style.opacity = 0, 900);
-    window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(text), "_blank");
+  // 📱 **MOBILE MODE**
+  if (isMobile) {
+    // 1) afficher l’image en plein écran
+    mobileImage.src = dataUrl;
+    mobileScreen.classList.remove("hidden");
+
+    // 2) ouvrir twitter en même temps
+    setTimeout(() => {
+      const tweetUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text);
+      window.open(tweetUrl, "_blank");
+    }, 600);
+
     return;
   }
 
-  // ✅ DESKTOP — copier l'image dans le presse-papiers (pas de fallback download)
+  // 💻 **DESKTOP MODE**
   try {
     await navigator.clipboard.write([
       new ClipboardItem({ "image/png": blob })
     ]);
 
-    // Holo "Copied ✦" feedback
+    // Effet "Copied!"
     overlay.style.opacity = 1;
     setTimeout(() => overlay.style.opacity = 0, 900);
   } catch (err) {
-    console.warn("Clipboard image copy failed (desktop). No download fallback by design.");
-    // on ne fait rien → simplement continuer
+    console.warn("Clipboard image copy failed on desktop:", err);
+    // Si copie échoue → on ne télécharge pas → on continue
   }
 
-  // ✅ ouvrir le draft Twitter
+  // ouvrir twitter
   const tweetUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text);
   window.open(tweetUrl, "_blank");
 }
