@@ -264,6 +264,9 @@ function autoAdvanceIfComplete(currentGroup, categories) {
 }
   
 document.getElementById("share-btn").onclick = shareCard;
+document.getElementById("share-btn").onclick = shareCard;
+
+// --- DESKTOP CLICK-TO-COPY ---
 // --- DESKTOP CLICK-TO-COPY ---
 if (!isMobile()) {
   const shareBtn = document.getElementById("share-btn");
@@ -278,68 +281,42 @@ make yours here: https://nafyn.github.io/neverland-monadtoolkit/index.html`;
     window.open(tweetUrl, "_blank");
   };
 
-  // Apparence "cliquable"
+  // Carte cliquable
   resultCard.style.cursor = "pointer";
 
-  // Click sur la carte → copie l'image EXACTE affichée
   resultCard.addEventListener("click", async (e) => {
-  if (e.target.id === "share-btn") return;
+    // Ne pas copier si on clique le bouton share
+    if (e.target.id === "share-btn") return;
 
-  const copyHint = document.getElementById("copy-hint");
-  const overlay = document.getElementById("copied-overlay");
+    // Cacher TEMPORAIREMENT les éléments qu’on ne veut PAS dans l'image
+    shareBtn.style.display = "none";
+    copyHint.style.opacity = 0;
 
-  // 1) Clone propre de la carte
-  const clone = resultCard.cloneNode(true);
+    const canvas = await html2canvas(resultCard, {
+      backgroundColor: "radial-gradient(circle at top, #3B1477, #0C021F 70%)",
+      scale: window.devicePixelRatio * 2
+    });
 
-  // supprimer le bouton share
-  const shareBtnClone = clone.querySelector("#share-btn");
-  if (shareBtnClone) shareBtnClone.remove();
+    // Restaurer l’UI immédiatement
+    shareBtn.style.display = "";
+    copyHint.style.opacity = 0.6;
 
-  // supprimer le "click to copy"
-  const copyHintClone = clone.querySelector("#copy-hint");
-  if (copyHintClone) copyHintClone.remove();
+    const blob = await new Promise(res => canvas.toBlob(res, "image/png"));
+    await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
 
-  // 2) Conteneur hors écran OU on reconstitue le fond
-  const temp = document.createElement("div");
-  temp.style.position = "absolute";
-  temp.style.left = "-99999px";
-  temp.style.top = "0";
-  temp.style.padding = "40px"; 
-  temp.style.background = "radial-gradient(circle at top, #3B1477, #0C021F 70%)";
-  temp.style.display = "flex";
-  temp.style.alignItems = "center";
-  temp.style.justifyContent = "center";
+    // UI Feedback
+    overlay.style.opacity = 1;
+    copyHint.textContent = "Copied!";
+    copyHint.style.color = "#D767FF";
 
-  clone.style.borderRadius = "20px";
-  clone.style.width = resultCard.offsetWidth + "px";
-
-  temp.appendChild(clone);
-  document.body.appendChild(temp);
-
-  // 3) Capture seulement le conteneur
-  const canvas = await html2canvas(temp, {
-    backgroundColor: null,
-    scale: window.devicePixelRatio * 2
+    setTimeout(() => {
+      overlay.style.opacity = 0;
+      copyHint.textContent = "Click to copy";
+      copyHint.style.color = "rgba(255,255,255,0.6)";
+    }, 1000);
   });
+}
 
-  // supprimer zone temporaire
-  document.body.removeChild(temp);
-
-  // 4) Envoi Clipboard
-  const blob = await new Promise(res => canvas.toBlob(res, "image/png"));
-  await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
-
-  // 5) Feedback UI
-  overlay.style.opacity = 1;
-  copyHint.textContent = "Copied!";
-  copyHint.style.color = "#D767FF";
-
-  setTimeout(() => {
-    overlay.style.opacity = 0;
-    copyHint.textContent = "Click to copy";
-    copyHint.style.color = "rgba(255,255,255,0.6)";
-  }, 1000);
-});
 
 async function shareCard() {
   const card = document.getElementById("result-card");
