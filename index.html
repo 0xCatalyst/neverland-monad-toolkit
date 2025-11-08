@@ -21,38 +21,6 @@
   transform: scale(1.01);
   transition: 0.18s ease-out;
 }
-    /* --- REAL FIX — desktop only --- */
-@media (min-width: 768px) {
-
-  /* On neutralise l'espace vertical auto ("space-y-1") */
-  #result-content {
-    display: flex;
-    flex-direction: column;
-    gap: 6px; /* <— ajuste ici (5–9 px pour tester) */
-  }
-
-  /* Catégories (colonne gauche) */
-  #result-content .flex span:first-child {
-    opacity: 0.72;
-    letter-spacing: 0.2px; /* <— rend la colonne plus 'posée' */
-    padding-right: 14px;
-  }
-
-  /* Valeurs (colonne droite) */
-  #result-content .flex span:last-child {
-    font-weight: 450; /* très subtil, donne du relief */
-  }
-
-  /* Baisser un peu la section "~ on Mainnet Day 1 ~" */
-  #result-card h3 + p {
-    margin-bottom: 22px !important;
-  }
-
-  /* Remonter légèrement le Powered */
-  #powered-card {
-    margin-top: 28px !important;
-  }
-}
   </style>
 </head>
 
