@@ -35,16 +35,22 @@
   </div>
 
 <script>
-const categories = {
-  Wallets: ["Phantom", "Backpack", "Metamask", "Rabby", "Haha Wallet"],
-  Bridges: ["Wormhole", "LayerZero"],
-  DEX: ["Kuru", "Uniswap", "LFJ", "Curve", "Purps", "Monday Trade"],
-  Lending: ["Neverland", "Euler", "Curvance"],
-  Perps: ["Perpl", "Drake"],
-  Launchpad: ["Alloca", "Cult"],
-  NFTs: ["OpenSea", "Magic Eden", "Kingdomly", "Poply"],
-  "Liquid Staking": ["Fastlane", "Magma", "Kintsu", "Apriori"],
-  "Prediction Markets": ["Kizzy", "RBS", "Levr"]
+const groups = {
+  "Infra": {
+    Wallets: ["Phantom", "Backpack", "Metamask", "Rabby", "Haha Wallet"],
+    Bridges: ["Wormhole", "LayerZero"]
+  },
+  "DeFi": {
+    DEX: ["Kuru", "Uniswap", "LFJ", "Curve", "Purps", "Monday Trade"],
+    Lending: ["Neverland", "Euler", "Curvance"],
+    Perps: ["Perpl", "Drake"],
+    "Liquid Staking": ["Fastlane", "Magma", "Kintsu"]
+  },
+  "Ecosystem": {
+    Launchpad: ["Alloca", "Cult"],
+    NFTs: ["OpenSea", "Magic Eden", "Kingdomly", "Poply"],
+    "Prediction Markets": ["Kizzy", "RBS", "Levr"]
+  }
 };
 
 const state = {};
@@ -55,38 +61,46 @@ const resultContent = document.getElementById("result-content");
 function render() {
   app.innerHTML = "";
 
-  Object.entries(categories).forEach(([category, options]) => {
-    const section = document.createElement("div");
+  Object.entries(groups).forEach(([groupName, categories]) => {
+    const groupBlock = document.createElement("div");
+    groupBlock.className = "p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-lg space-y-6";
 
-    section.innerHTML = `
-      <h2 class="text-xl font-medium mb-3">${category}</h2>
-      <div class="flex flex-wrap gap-3"></div>
-    `;
+    const title = document.createElement("h2");
+    title.className = "text-2xl font-semibold";
+    title.textContent = groupName;
+    groupBlock.appendChild(title);
 
-    const buttons = section.querySelector("div");
+    Object.entries(categories).forEach(([category, options]) => {
+      const section = document.createElement("div");
+      section.className = "space-y-2";
 
-    options.forEach(option => {
-      const btn = document.createElement("button");
-      const active = state[category] === option;
+      section.innerHTML = `<h3 class="text-lg font-medium">${category}</h3><div class='flex flex-wrap gap-3'></div>`;
+      const buttons = section.querySelector("div");
 
-      btn.className = `
-        px-4 py-2 rounded-full text-sm border transition
-        ${active 
-          ? "bg-gradient-to-r from-[#D767FF] to-[#8A4BFF] border-transparent shadow-md scale-105"
-          : "bg-[#31144B]/50 border-white/20 hover:border-white/40"}
-      `;
-      btn.textContent = option;
+      options.forEach(option => {
+        const chosen = state[category] === option;
+        const btn = document.createElement("button");
+        btn.className = `
+          px-4 py-2 rounded-full text-sm border transition
+          ${chosen 
+            ? "bg-gradient-to-r from-[#D767FF] to-[#8A4BFF] border-transparent shadow-md scale-105"
+            : "bg-white/5 border-white/20 hover:border-white/40"}
+        `;
+        btn.textContent = option;
 
-      btn.onclick = () => {
-        state[category] = option;
-        updateCard();
-        render();
-      };
+        btn.onclick = () => {
+          state[category] = option;
+          updateCard();
+          render();
+        };
 
-      buttons.appendChild(btn);
+        buttons.appendChild(btn);
+      });
+
+      groupBlock.appendChild(section);
     });
 
-    app.appendChild(section);
+    app.appendChild(groupBlock);
   });
 }
 
