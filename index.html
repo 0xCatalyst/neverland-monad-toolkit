@@ -284,41 +284,36 @@ make yours here: https://nafyn.github.io/neverland-monadtoolkit/index.html`;
   resultCard.style.cursor = "pointer";
 
   // Click sur la carte → copie l'image EXACTE affichée
-  resultCard.addEventListener("click", async (e) => {
-  if (e.target.id === "share-btn") return; // ne copie pas si clic sur le bouton
-
-  const copyHint = document.getElementById("copy-hint");
-  const overlay = document.getElementById("copied-overlay");
+resultCard.addEventListener("click", async (e) => {
+  if (e.target.id === "share-btn") return;
 
   try {
-    // capture toute la page (donc gradient conservé)
+    const cardRect = resultCard.getBoundingClientRect();
+
     const canvas = await html2canvas(document.body, {
       backgroundColor: null,
       scale: window.devicePixelRatio * 2
     });
 
-    const cardRect = resultCard.getBoundingClientRect();
-    const finalCanvas = document.createElement("canvas");
-    finalCanvas.width = cardRect.width * 2;
-    finalCanvas.height = cardRect.height * 2;
+    const ctx = canvas.getContext("2d");
 
-    const ctx = finalCanvas.getContext("2d");
-    ctx.drawImage(
-      canvas,
-      cardRect.left * 2,
-      cardRect.top * 2,
-      cardRect.width * 2,
-      cardRect.height * 2,
-      0,
-      0,
-      cardRect.width * 2,
-      cardRect.height * 2
-    );
+    // conversion DOM → canvas
+    const scale = canvas.width / document.body.clientWidth;
+    const sx = cardRect.left * scale;
+    const sy = cardRect.top * scale;
+    const sw = cardRect.width * scale;
+    const sh = cardRect.height * scale;
 
-    const blob = await new Promise(res => finalCanvas.toBlob(res, "image/png"));
+    // créer un canvas crop
+    const output = document.createElement("canvas");
+    output.width = sw;
+    output.height = sh;
+
+    output.getContext("2d").drawImage(canvas, sx, sy, sw, sh, 0, 0, sw, sh);
+
+    const blob = await new Promise(res => output.toBlob(res, "image/png"));
     await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
 
-    // Feedback
     overlay.style.opacity = 1;
     copyHint.textContent = "Copied!";
     copyHint.style.color = "#D767FF";
@@ -332,8 +327,7 @@ make yours here: https://nafyn.github.io/neverland-monadtoolkit/index.html`;
   } catch (err) {
     console.error("copy failed:", err);
   }
-});
-}  
+});  
 
 async function shareCard() {
   const card = document.getElementById("result-card");
