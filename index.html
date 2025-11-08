@@ -242,20 +242,6 @@ function autoAdvanceIfComplete(currentGroup, categories) {
   render();
 }
   
-document.getElementById("share-btn").onclick = () => {
-  const text = `this is my Monad Mainnet Toolkit. day 1 is gonna be a movie ✦
-  \n make yours here: https://nafyn.github.io/neverland-monadtoolkit/index.html`;
-
-  // copie dans le presse-papier
-  navigator.clipboard.writeText(text).catch(() => {});
-
-  // ouvre un draft twitter pré-rempli
-  const tweetUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text);
-  window.open(tweetUrl, "_blank");
-};
-
-document.getElementById("share-btn").onclick = shareCard;
-
 document.getElementById("share-btn").onclick = shareCard;
 
 async function shareCard() {
@@ -319,7 +305,6 @@ async function shareCard() {
   };
 }
 
-document.getElementById("share-btn").onclick = shareCard;
 render();
 </script>
 
