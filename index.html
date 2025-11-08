@@ -255,32 +255,67 @@ async function shareCard() {
   const tweetText = `this is my Monad Mainnet Toolkit. day 1 is gonna be a movie ✦
 n/make yours here: https://nafyn.github.io/neverland-monadtoolkit/index.html`;
   const tweetUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(tweetText);
-
 // === MOBILE ===
-if (isMobile) {
-  // 0) Masquer tout sauf la carte pour la capture
-  document.body.querySelectorAll(':not(#result-card):not(#result-card * )')
-    .forEach(el => el.style.opacity = '0');
+{
+  const tweetText = `this is my Monad Mainnet Toolkit. day 1 is gonna be a movie ✦
+make yours here: https://nafyn.github.io/neverland-monadtoolkit/index.html`;
+  const tweetUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(tweetText);
 
-  // 1) Supprimer le bouton du screenshot
-  const originalDisplay = shareBtn.style.display;
-  shareBtn.style.display = "none";
+  // 1) Cloner la carte
+  const card = document.getElementById("result-card");
+  const mobileScreen = document.getElementById("mobile-save-screen");
+  const mobileImage  = document.getElementById("mobile-save-image");
+  const closeBtn     = document.getElementById("mobile-close");
 
-  // 2) Screenshot DE TOUT LE BODY (le fond violet reste)
-  const canvas = await html2canvas(document.body, { backgroundColor: null, scale: 2 });
+  const clone = card.cloneNode(true);
 
-  // 3) Remettre ce qu'on a masqué
-  shareBtn.style.display = originalDisplay;
-  document.body.querySelectorAll('*').forEach(el => el.style.opacity = '');
+  // retirer le bouton du clone
+  const btn = clone.querySelector("#share-btn");
+  if (btn) btn.remove();
 
-  // 4) Convertir en image
+  // éviter les artefacts iOS (html2canvas ne gère pas backdrop-filter)
+  clone.classList.remove("backdrop-blur");
+  clone.style.backdropFilter = "none";
+
+  // 2) Construire un conteneur temporaire HORS-ÉCRAN avec le BON fond
+  const temp = document.createElement("div");
+  temp.style.position = "absolute";
+  temp.style.left = "-99999px";
+  temp.style.top = "0";
+  temp.style.width = "100vw";
+  temp.style.minHeight = "100vh";
+  temp.style.padding = "24px";
+  temp.style.boxSizing = "border-box";
+  temp.style.display = "flex";
+  temp.style.alignItems = "center";
+  temp.style.justifyContent = "center";
+  // ✅ même gradient que ta page
+  temp.style.background = "radial-gradient(circle at top, #3B1477, #0C021F 70%)";
+
+  // 3) Forcer une largeur jolie (plein écran mobile, sans déformer)
+  clone.style.width = "92vw";
+  clone.style.maxWidth = "640px";
+  clone.style.margin = "0 auto";
+  clone.style.borderRadius = "20px";
+
+  // ajouter et capturer
+  temp.appendChild(clone);
+  document.body.appendChild(temp);
+
+  const canvas = await html2canvas(temp, {
+    backgroundColor: null,
+    scale: window.devicePixelRatio * 1.6
+  });
+
+  // nettoyer
+  document.body.removeChild(temp);
+
+  // 4) Afficher l’UI de sauvegarde (tap & hold → Save Image)
   const dataUrl = canvas.toDataURL("image/png");
-
-  // 5) Afficher dans l’UI de sauvegarde
   mobileImage.src = dataUrl;
   mobileScreen.classList.remove("hidden");
 
-  // 6) Ouvrir Twitter après sauvegarde
+  // 5) Après “Done ✦” → ouvrir Twitter
   closeBtn.onclick = () => {
     mobileScreen.classList.add("hidden");
     window.open(tweetUrl, "_blank");
@@ -288,7 +323,6 @@ if (isMobile) {
 
   return;
 }
-
   
 }
 
