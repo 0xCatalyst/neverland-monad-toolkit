@@ -285,33 +285,54 @@ make yours here: https://nafyn.github.io/neverland-monadtoolkit/index.html`;
 
   // Click sur la carte → copie l'image EXACTE affichée
   resultCard.addEventListener("click", async (e) => {
-    // empêche le clic sur le bouton de déclencher la copie
-    if (e.target.id === "share-btn") return;
+  if (e.target.id === "share-btn") return; // ne copie pas si clic sur le bouton
 
-    try {
-      const canvas = await html2canvas(resultCard, {
-        backgroundColor: radial-gradient(circle at top, #3B1477, #0C021F 70%),
-        scale: window.devicePixelRatio * 2
-      });
+  const copyHint = document.getElementById("copy-hint");
+  const overlay = document.getElementById("copied-overlay");
 
-      const blob = await new Promise(res => canvas.toBlob(res, "image/png"));
-      await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+  try {
+    // capture toute la page (donc gradient conservé)
+    const canvas = await html2canvas(document.body, {
+      backgroundColor: null,
+      scale: window.devicePixelRatio * 2
+    });
 
-      // Feedback "Copied!"
-      overlay.style.opacity = 1;
-      copyHint.textContent = "Copied!";
-      copyHint.style.color = "#D767FF";
+    const cardRect = resultCard.getBoundingClientRect();
+    const finalCanvas = document.createElement("canvas");
+    finalCanvas.width = cardRect.width * 2;
+    finalCanvas.height = cardRect.height * 2;
 
-      setTimeout(() => {
-        overlay.style.opacity = 0;
-        copyHint.textContent = "Click to copy";
-        copyHint.style.color = "rgba(255,255,255,0.6)";
-      }, 1000);
+    const ctx = finalCanvas.getContext("2d");
+    ctx.drawImage(
+      canvas,
+      cardRect.left * 2,
+      cardRect.top * 2,
+      cardRect.width * 2,
+      cardRect.height * 2,
+      0,
+      0,
+      cardRect.width * 2,
+      cardRect.height * 2
+    );
 
-    } catch (err) {
-      console.error("copy failed:", err);
-    }
-  });
+    const blob = await new Promise(res => finalCanvas.toBlob(res, "image/png"));
+    await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+
+    // Feedback
+    overlay.style.opacity = 1;
+    copyHint.textContent = "Copied!";
+    copyHint.style.color = "#D767FF";
+
+    setTimeout(() => {
+      overlay.style.opacity = 0;
+      copyHint.textContent = "Click to copy";
+      copyHint.style.color = "rgba(255,255,255,0.6)";
+    }, 1000);
+
+  } catch (err) {
+    console.error("copy failed:", err);
+  }
+});
 }  
 
 async function shareCard() {
