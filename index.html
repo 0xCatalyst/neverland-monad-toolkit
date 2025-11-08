@@ -17,11 +17,14 @@
 </head>
 
 <body class="min-h-screen text-white flex justify-center py-10 px-4">
+  
+ <header class="w-full bg-black/40 backdrop-blur-md border-b border-white/10 py-4 px-6 flex items-center gap-3">
+  <div class="w-3 h-3 rounded-full" style="background: radial-gradient(circle, #D767FF 0%, #8A4BFF 90%); box-shadow: 0 0 12px #D767FF;"></div>
+  <span class="text-xl font-semibold tracking-wide text-white">Monad Day 1 Toolkit</span>
+</header>
 
-  <div class="w-full max-w-6xl space-y-10">
-
-    <!-- Title -->
-    <h1 class="text-4xl font-bold tracking-wide">Monad Day 1 Toolkit</h1>
+  <div id="mobile-progress" class="md:hidden flex justify-center gap-2 mt-6"></div>
+  <div class="w-full max-w-5xl mx-auto space-y-6 mt-12">
 
     <!-- Main Layout -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -64,9 +67,69 @@ const resultContent = document.getElementById("result-content");
 function render() {
   app.innerHTML = "";
 
+  const groupList = Object.entries(groups);
+  const flatCategories = groupList.flatMap(([_, cats]) => Object.keys(cats));
+
+  // --- MOBILE MODE ---
+  if (isMobile()) {
+
+    const categoryName = flatCategories[currentStep];
+    const options = groupList.flatMap(([_, cats]) => cats[categoryName] ?? []);
+
+    const container = document.createElement("div");
+    container.className = "space-y-4";
+
+    // category title
+    container.innerHTML = `<h2 class="text-2xl font-semibold">${categoryName}</h2>`;
+
+    const buttons = document.createElement("div");
+    buttons.className = "flex flex-wrap gap-3";
+
+    options.forEach(option => {
+      const active = state[categoryName] === option;
+      const btn = document.createElement("button");
+      btn.className = `
+        px-4 py-2 rounded-full text-sm border transition
+        ${active 
+          ? "bg-gradient-to-r from-[#D767FF] to-[#8A4BFF] border-transparent shadow-md scale-105"
+          : "bg-white/5 border-white/20 hover:border-white/40"}
+      `;
+      btn.textContent = option;
+      btn.onclick = () => { state[categoryName] = option; updateCard(); render(); };
+      buttons.appendChild(btn);
+    });
+
+    container.appendChild(buttons);
+
+    // navigation
+    const nav = document.createElement("div");
+    nav.className = "flex justify-between mt-6 text-sm";
+
+    nav.innerHTML = `
+      <button ${currentStep === 0 ? "disabled" : ""} class="px-4 py-2 bg-white/10 border border-white/20 rounded-lg">Back</button>
+      <button class="px-4 py-2 bg-gradient-to-r from-[#D767FF] to-[#8A4BFF] rounded-lg">Next</button>
+    `;
+
+    nav.children[0].onclick = () => { currentStep--; render(); };
+    nav.children[1].onclick = () => { if (currentStep < flatCategories.length - 1) currentStep++; render(); };
+
+    container.appendChild(nav);
+    app.appendChild(container);
+
+    // progress dots
+    const progress = document.getElementById("mobile-progress");
+    progress.innerHTML = flatCategories.map((_, i) => `
+      <div class="transition-all duration-300 ${i === currentStep ? "w-6 bg-[#D767FF]" : "w-2 bg-white/30"} h-2 rounded-full"></div>
+    `).join("");
+
+    return;
+  }
+
+  // --- DESKTOP MODE (unchanged layout) ---
+  // same rendering as before (your working version)
   Object.entries(groups).forEach(([groupName, categories]) => {
     const groupBlock = document.createElement("div");
-    groupBlock.className = "p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-lg space-y-6";
+    groupBlock.className = "p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur space-y-3";
 
     const title = document.createElement("h2");
     title.className = "text-2xl font-semibold";
@@ -90,13 +153,7 @@ function render() {
             : "bg-white/5 border-white/20 hover:border-white/40"}
         `;
         btn.textContent = option;
-
-        btn.onclick = () => {
-          state[category] = option;
-          updateCard();
-          render();
-        };
-
+        btn.onclick = () => { state[category] = option; updateCard(); render(); };
         buttons.appendChild(btn);
       });
 
@@ -106,7 +163,6 @@ function render() {
     app.appendChild(groupBlock);
   });
 }
-
 function updateCard() {
   let html = "";
 
