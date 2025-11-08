@@ -60,6 +60,8 @@ const groups = {
 };
 
 const state = {};
+let openGroup = "Infra"; // groupe visible par défaut
+  
 const app = document.getElementById("app");
 const resultCard = document.getElementById("result-card");
 const resultContent = document.getElementById("result-content");
@@ -128,15 +130,27 @@ function render() {
   }
 
   // --- DESKTOP MODE ---
-  Object.entries(groups).forEach(([groupName, categories]) => {
-    const groupBlock = document.createElement("div");
-    groupBlock.className = "p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur space-y-3";
+Object.entries(groups).forEach(([groupName, categories]) => {
+  const isOpen = openGroup === groupName;
 
-    const title = document.createElement("h2");
-    title.className = "text-2xl font-semibold";
-    title.textContent = groupName;
-    groupBlock.appendChild(title);
+  const groupBlock = document.createElement("div");
+  groupBlock.className = `
+    rounded-xl bg-white/5 border border-white/10 backdrop-blur transition-all overflow-hidden
+    ${isOpen ? "p-4 space-y-3" : "p-3 opacity-70 hover:opacity-100 cursor-pointer"}
+  `;
 
+  // header
+  const header = document.createElement("div");
+  header.className = "flex justify-between items-center";
+  header.innerHTML = `
+    <h2 class="text-2xl font-semibold">${groupName}</h2>
+    <span class="text-sm text-white/60">${isOpen ? "▲" : "▼"}</span>
+  `;
+  header.onclick = () => { openGroup = groupName; render(); };
+  groupBlock.appendChild(header);
+
+  if (isOpen) {
+    // inner categories
     Object.entries(categories).forEach(([category, options]) => {
       const section = document.createElement("div");
       section.className = "space-y-2";
@@ -154,15 +168,20 @@ function render() {
             : "bg-white/5 border-white/20 hover:border-white/40"}
         `;
         btn.textContent = option;
-        btn.onclick = () => { state[category] = option; updateCard(); render(); };
+        btn.onclick = () => { 
+          state[category] = option; 
+          updateCard(); 
+          autoAdvanceIfComplete(groupName, categories);
+        };
         buttons.appendChild(btn);
       });
 
       groupBlock.appendChild(section);
     });
+  }
 
-    app.appendChild(groupBlock);
-  });
+  app.appendChild(groupBlock);
+});
 }
 
 function updateCard() {
@@ -183,6 +202,22 @@ function updateCard() {
   resultContent.innerHTML = html;
   resultCard.classList.remove("hidden");
 }
+
+function autoAdvanceIfComplete(currentGroup, categories) {
+  // Check if every category inside currentGroup has one choice
+  const allChosen = Object.keys(categories).every(cat => state[cat]);
+
+  if (!allChosen) return;
+
+  const groupNames = Object.keys(groups);
+  const currentIndex = groupNames.indexOf(currentGroup);
+
+  if (currentIndex < groupNames.length - 1) {
+    openGroup = groupNames[currentIndex + 1];
+  }
+
+  render();
+}  
 
 render();
 </script>
