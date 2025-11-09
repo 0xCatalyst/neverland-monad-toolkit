@@ -1,0 +1,25 @@
+{
+  "name": "neverland-monadtoolkit",
+  "version": "1.0.0",
+  "description": "Neverland Monad Toolkit",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "tailwindcss -i ./src/input.css -o ./css/tailwind.css --minify",
+    "watch:css": "tailwindcss -i ./src/input.css -o ./css/tailwind.css --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nafyn/neverland-monadtoolkit.git"
+  },
+  "keywords": [],
+  "author": "nafyn",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nafyn/neverland-monadtoolkit/issues"
+  },
+  "homepage": "https://github.com/nafyn/neverland-monadtoolkit#readme",
+  "devDependencies": {
+    "tailwindcss": "^3.4.18"
+  }
+}

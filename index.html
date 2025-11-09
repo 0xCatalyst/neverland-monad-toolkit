@@ -17,17 +17,11 @@
     <link rel="apple-touch-icon" sizes="180x180" href="apple-icon.png" />
     <link rel="manifest" href="manifest.json" />
 
-    <link
-      rel="canonical"
-      href="https://toolkit.neverland.money/"
-    />
+    <link rel="canonical" href="https://toolkit.neverland.money/" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://toolkit.neverland.money/"
-    />
+    <meta property="og:url" content="https://toolkit.neverland.money/" />
     <meta property="og:title" content="Monad Day 1 | Neverland Money" />
     <meta
       property="og:description"
@@ -44,10 +38,7 @@
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta
-      name="twitter:url"
-      content="https://toolkit.neverland.money/"
-    />
+    <meta name="twitter:url" content="https://toolkit.neverland.money/" />
     <meta name="twitter:title" content="Monad Day 1 | Neverland Money" />
     <meta
       name="twitter:description"
@@ -67,19 +58,45 @@
     <!-- Robots -->
     <meta name="robots" content="index, follow" />
 
-    <!-- Google Fonts -->
+    <!-- Preconnect to external resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+
+    <!-- Google Fonts -->
     <link
       href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Cinzel+Decorative:wght@400;700;900&family=Quicksand:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
 
-    <!-- Tailwind CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Critical inline styles for FCP -->
+    <style>
+      html {
+        background: #200041;
+        overflow-x: hidden;
+      }
+      body {
+        background: linear-gradient(
+          135deg,
+          #200041 0%,
+          #3d1766 50%,
+          #200041 100%
+        );
+        min-height: 100vh;
+        margin: 0;
+        font-family: system-ui, -apple-system, sans-serif;
+        overflow-x: hidden;
+      }
+    </style>
+
+    <!-- Tailwind CSS (built) -->
+    <link rel="stylesheet" href="css/tailwind.css" />
 
     <!-- Custom Styles -->
     <link rel="stylesheet" href="css/styles.css" />
+
+    <!-- Preload critical scripts -->
+    <link rel="preload" href="js/app.js" as="script" />
   </head>
 
   <body class="min-h-screen text-white">
@@ -131,7 +148,7 @@
 
           <div
             id="result-card"
-            class="hidden md:block h-fit sticky top-10 p-4 rounded-xl bg-[#2a0b52]/50 border border-[#3e2260]/50 shadow-lg relative transition-all duration-300"
+            class="hidden md:block h-fit sticky top-10 p-4 rounded-xl bg-[#2a0b52]/50 border border-[#3e2260]/50 shadow-lg transition-all duration-300"
           >
             <h3 class="text-lg font-semibold mb-2 text-center">My Toolkit</h3>
             <p class="text-sm text-white/70 text-center mb-2">
@@ -224,7 +241,7 @@
     <!-- Confirmation Modal -->
     <div
       id="confirm-modal"
-      class="fixed inset-0 bg-black/80 backdrop-blur-lg hidden z-[60] flex items-center justify-center p-6"
+      class="fixed inset-0 bg-black/80 backdrop-blur-lg hidden z-[60] items-center justify-center p-6"
     >
       <div
         class="bg-gradient-to-b from-[#2a0b52] to-[#1a0532] border border-[#CF6EDD]/30 rounded-2xl p-6 max-w-sm w-full shadow-2xl"
@@ -246,7 +263,7 @@
             id="confirm-yes"
             class="flex-1 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium transition-colors px-6 py-3 text-sm bg-gradient-to-b from-[#C757D8] to-[#9A00B2] text-white hover:from-[#CF6EDD] hover:to-[#B500D1]"
           >
-            Yes, Share ✦
+            Yes, Share
           </button>
         </div>
       </div>
@@ -254,7 +271,7 @@
 
     <div
       id="mobile-save-screen"
-      class="fixed inset-0 bg-black/90 backdrop-blur-lg hidden z-50 flex flex-col justify-center items-center p-6 text-center"
+      class="fixed inset-0 bg-black/90 backdrop-blur-lg hidden z-50 justify-center items-center p-6 text-center"
     >
       <img
         id="mobile-save-image"
@@ -300,10 +317,10 @@
     </footer>
 
     <!-- HTML2Canvas Library -->
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
-    <!-- Framer Motion -->
-    <script src="https://cdn.jsdelivr.net/npm/framer-motion@11.0.8/dist/framer-motion.js"></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"
+    ></script>
 
     <!-- Vercel Speed Insights -->
     <script>
@@ -326,6 +343,6 @@
     <script defer src="/_vercel/insights/script.js"></script>
 
     <!-- App Script -->
-    <script src="js/app.js"></script>
+    <script defer src="js/app.js"></script>
   </body>
 </html>

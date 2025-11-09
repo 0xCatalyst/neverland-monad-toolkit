@@ -1,7 +1,13 @@
+html {
+  background: #200041;
+  overflow-x: hidden;
+}
+
 body {
   background: linear-gradient(116deg, #200041, #10002c 50%, #2e0958);
   background-attachment: fixed;
   font-family: "Quicksand", system-ui, sans-serif;
+  overflow-x: hidden;
 }
 
 #result-card {
