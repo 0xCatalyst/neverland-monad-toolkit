@@ -92,10 +92,10 @@ open index.html
 
 ### Deployment
 
-The project is deployed on GitHub Pages. Any push to the `main` branch will automatically deploy to:
+The project is deployed on Vercel.
 
 ```
-https://nafyn.github.io/neverland-monadtoolkit/
+https://toolkit.neverland.money/
 ```
 
 ## 🎨 Design Features
