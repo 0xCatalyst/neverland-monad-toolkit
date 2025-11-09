@@ -62,7 +62,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com" />
 
     <!-- Google Fonts -->
     <link
@@ -72,6 +71,10 @@
 
     <!-- Critical inline styles for FCP -->
     <style>
+      html {
+        background: #200041;
+        overflow-x: hidden;
+      }
       body {
         background: linear-gradient(
           135deg,
@@ -82,11 +85,12 @@
         min-height: 100vh;
         margin: 0;
         font-family: system-ui, -apple-system, sans-serif;
+        overflow-x: hidden;
       }
     </style>
 
-    <!-- Tailwind CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS (built) -->
+    <link rel="stylesheet" href="css/tailwind.css" />
 
     <!-- Custom Styles -->
     <link rel="stylesheet" href="css/styles.css" />
@@ -144,7 +148,7 @@
 
           <div
             id="result-card"
-            class="hidden md:block h-fit sticky top-10 p-4 rounded-xl bg-[#2a0b52]/50 border border-[#3e2260]/50 shadow-lg relative transition-all duration-300"
+            class="hidden md:block h-fit sticky top-10 p-4 rounded-xl bg-[#2a0b52]/50 border border-[#3e2260]/50 shadow-lg transition-all duration-300"
           >
             <h3 class="text-lg font-semibold mb-2 text-center">My Toolkit</h3>
             <p class="text-sm text-white/70 text-center mb-2">
@@ -237,7 +241,7 @@
     <!-- Confirmation Modal -->
     <div
       id="confirm-modal"
-      class="fixed inset-0 bg-black/80 backdrop-blur-lg hidden z-[60] flex items-center justify-center p-6"
+      class="fixed inset-0 bg-black/80 backdrop-blur-lg hidden z-[60] items-center justify-center p-6"
     >
       <div
         class="bg-gradient-to-b from-[#2a0b52] to-[#1a0532] border border-[#CF6EDD]/30 rounded-2xl p-6 max-w-sm w-full shadow-2xl"
@@ -259,7 +263,7 @@
             id="confirm-yes"
             class="flex-1 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium transition-colors px-6 py-3 text-sm bg-gradient-to-b from-[#C757D8] to-[#9A00B2] text-white hover:from-[#CF6EDD] hover:to-[#B500D1]"
           >
-            Yes, Share ✦
+            Yes, Share
           </button>
         </div>
       </div>
@@ -267,7 +271,7 @@
 
     <div
       id="mobile-save-screen"
-      class="fixed inset-0 bg-black/90 backdrop-blur-lg hidden z-50 flex flex-col justify-center items-center p-6 text-center"
+      class="fixed inset-0 bg-black/90 backdrop-blur-lg hidden z-50 justify-center items-center p-6 text-center"
     >
       <img
         id="mobile-save-image"
