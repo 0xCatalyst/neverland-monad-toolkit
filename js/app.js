@@ -1002,6 +1002,13 @@ async function shareCard() {
       link.download = "my-monad-toolkit.png";
       link.href = dataUrl;
       link.click();
+
+      // Mark that user has saved the image
+      const copyData = {
+        timestamp: Date.now(),
+        toolkitHash: JSON.stringify(state),
+      };
+      localStorage.setItem("imageCopied", JSON.stringify(copyData));
     };
 
     cancelBtn.onclick = () => {
@@ -1019,12 +1026,17 @@ async function shareCard() {
 
     // Handle confirmation modal buttons
     confirmYes.onclick = () => {
+      // Mark that user confirmed they saved the image
+      const copyData = {
+        timestamp: Date.now(),
+        toolkitHash: JSON.stringify(state),
+      };
+      localStorage.setItem("imageCopied", JSON.stringify(copyData));
+
       confirmModal.classList.add("hidden");
       confirmModal.classList.remove("flex");
       mobileScreen.classList.add("hidden");
       mobileScreen.classList.remove("flex", "flex-col");
-      // Reset the flag so they'll be asked again next time
-      localStorage.removeItem("imageCopied");
       window.open(tweetUrl, "_blank");
     };
 
