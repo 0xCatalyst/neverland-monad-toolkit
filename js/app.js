@@ -65,16 +65,9 @@ const groups = {
   },
 };
 
-// Load saved toolkit state on page load
+// Load saved state from localStorage
 const savedState = localStorage.getItem("toolkitState");
-if (savedState) {
-  try {
-    const parsed = JSON.parse(savedState);
-    Object.assign(state, parsed);
-  } catch (e) {
-    console.error("Failed to load saved state:", e);
-  }
-}
+const state = savedState ? JSON.parse(savedState) : {};
 
 const app = document.getElementById("app");
 const resultCard = document.getElementById("result-card");
@@ -91,22 +84,6 @@ let twitterUsername = localStorage.getItem("twitterUsername") || "";
 function saveState() {
   localStorage.setItem("toolkitState", JSON.stringify(state));
   // Clear the image copied flag since toolkit changed
-  localStorage.removeItem("imageCopied");
-}
-
-// Clean up expired imageCopied flag on page load
-try {
-  const copyDataStr = localStorage.getItem("imageCopied");
-  if (copyDataStr) {
-    const copyData = JSON.parse(copyDataStr);
-    const timeDiff = Date.now() - copyData.timestamp;
-    // Remove if older than 5 minutes
-    if (timeDiff >= 300000) {
-      localStorage.removeItem("imageCopied");
-    }
-  }
-} catch (e) {
-  // Invalid data, remove it
   localStorage.removeItem("imageCopied");
 }
 
