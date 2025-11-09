@@ -985,6 +985,7 @@ async function shareCard() {
     const dataUrl = canvas.toDataURL("image/png");
     mobileImage.src = dataUrl;
     mobileScreen.classList.remove("hidden");
+    mobileScreen.classList.add("flex", "flex-col");
 
     // Restore button state
     shareBtn.innerHTML = originalText;
@@ -1005,6 +1006,7 @@ async function shareCard() {
 
     cancelBtn.onclick = () => {
       mobileScreen.classList.add("hidden");
+      mobileScreen.classList.remove("flex", "flex-col");
       // Reset the flag so they'll be asked again next time
       localStorage.removeItem("imageCopied");
     };
@@ -1012,12 +1014,15 @@ async function shareCard() {
     closeBtn.onclick = () => {
       // Show custom confirmation modal
       confirmModal.classList.remove("hidden");
+      confirmModal.classList.add("flex");
     };
 
     // Handle confirmation modal buttons
     confirmYes.onclick = () => {
       confirmModal.classList.add("hidden");
+      confirmModal.classList.remove("flex");
       mobileScreen.classList.add("hidden");
+      mobileScreen.classList.remove("flex", "flex-col");
       // Reset the flag so they'll be asked again next time
       localStorage.removeItem("imageCopied");
       window.open(tweetUrl, "_blank");
@@ -1025,6 +1030,7 @@ async function shareCard() {
 
     confirmNo.onclick = () => {
       confirmModal.classList.add("hidden");
+      confirmModal.classList.remove("flex");
       // User stays on save screen
     };
   } catch (error) {
