@@ -50,17 +50,15 @@ const groups = {
     ],
   },
   Ecosystem: {
-    Social: [
-      { name: "Cult", logo: "cult" },
-      { name: "Jenius", logo: "jenius" },
-    ],
     Launchpad: [
       { name: "Atlantis", logo: "atlantis" },
+      { name: "Cult", logo: "cult" },
       { name: "Kuru", logo: "kuru" },
       { name: "Nad.fun", logo: "nad-fun" },
     ],
     "Gaming & AI": [
       { name: "Breath of Estova", logo: "breath-of-estova" },
+      { name: "Jenius", logo: "jenius" },
       { name: "Lumiterra", logo: "lumiterra" },
     ],
   },
