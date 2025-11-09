@@ -1,6 +1,7 @@
 const groups = {
   DeFi: {
     DEX: [
+      { name: "Alloca", logo: "alloca" },
       { name: "Atlantis", logo: "atlantis" },
       { name: "Bean Exchange", logo: "bean-exchange" },
       { name: "Dirol", logo: "dirol" },
